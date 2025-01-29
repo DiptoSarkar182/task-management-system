@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendTaskReminderJob;
 use App\Mail\TaskCreatedMail;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -45,20 +47,27 @@ class TaskController extends Controller
             'status' => 'required|in:pending,in_progress,completed',
             'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,webp|max:5120',
         ]);
+
         if ($request->hasFile('attachment')) {
             $validated['attachment_path'] = $request->file('attachment')->store('attachments', 'public');
         }
 
         $task = $request->user()->tasks()->create($validated);
 
-        $users = User::all();
+        // ✅ Schedule the reminder 1 day before due_date
+        $reminderTime = Carbon::parse($task->due_date)->subDay(); // 1 day before
 
-        // Send email to all users (queued)
+        if ($reminderTime->isFuture()) {
+            SendTaskReminderJob::dispatch($task)->delay($reminderTime);
+        }
+
+        // ✅ Send task creation email to all users (optional)
+        $users = User::all();
         foreach ($users as $user) {
             Mail::to($user->email)->queue(new TaskCreatedMail($task));
         }
 
-        return redirect()->route('dashboard')->with('success', 'Task created successfully!');
+        return redirect()->route('dashboard')->with('success', 'Task created & reminder scheduled!');
     }
 
     /**
