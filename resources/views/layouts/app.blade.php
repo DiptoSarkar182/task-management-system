@@ -9,22 +9,24 @@
 </head>
 <body>
 
-<nav>
-    <a href="{{ url('/') }}">Home</a>
-    @auth
-        <a href="{{ url('/dashboard') }}">Dashboard</a>
-        <a href="{{ route('logout') }}"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            Logout
-        </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-            @csrf
-        </form>
-    @else
-        <a href="{{ route('login') }}">Login</a>
-        <a href="{{ route('register') }}">Register</a>
-    @endauth
-</nav>
+@if (!request()->is('login') && !request()->is('register'))
+    <nav>
+        <a href="{{ url('/') }}">Home</a>
+        @auth
+            <a href="{{ url('/dashboard') }}">Dashboard</a>
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
+        @else
+            <a href="{{ route('login') }}">Login</a>
+            <a href="{{ route('register') }}">Register</a>
+        @endauth
+    </nav>
+@endif
 
 <div class="container">
     @yield('content')
