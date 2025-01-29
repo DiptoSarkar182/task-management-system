@@ -40,4 +40,8 @@ Route::prefix('tasks')->middleware('auth')->group(function () {
     Route::delete('{task}/remove-attachment', [TaskController::class, 'removeAttachment'])->name('tasks.removeAttachment');
 });
 
+// task comment
 Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])->name('tasks.comments.store');
+
+//download attachment
+Route::get('/tasks/{task}/download', [TaskController::class, 'download'])->name('tasks.download');

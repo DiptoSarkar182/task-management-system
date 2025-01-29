@@ -36,6 +36,12 @@
                 <!-- Show Download Link for Non-Image Files -->
                 <a href="{{ asset('storage/' . $task->attachment_path) }}" target="_blank" class="text-blue-500 underline">View Attachment</a>
             @endif
+            <div class="mt-3">
+                <a href="{{ route('tasks.download', $task->id) }}"
+                   class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+                    Download Attachment
+                </a>
+            </div>
         @endif
 
         <div class="mt-6">

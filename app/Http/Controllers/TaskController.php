@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TaskController extends Controller
 {
@@ -139,5 +140,13 @@ class TaskController extends Controller
         return redirect()->route('tasks.edit', $task->id)->with('success', 'Attachment removed successfully!');
     }
 
+    public function download(Task $task): BinaryFileResponse|RedirectResponse
+    {
+        if (!$task->attachment_path || !Storage::disk('public')->exists($task->attachment_path)) {
+            return redirect()->back()->with('error', 'File not found.');
+        }
+
+        return response()->download(storage_path("app/public/{$task->attachment_path}"));
+    }
 
 }
