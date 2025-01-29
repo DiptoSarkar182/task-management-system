@@ -6,8 +6,11 @@
     <div class="max-w-4xl mx-auto bg-white p-6 shadow rounded-lg">
         <h1 class="text-2xl font-bold text-gray-700 mb-4">{{ $task->title }}</h1>
 
+        <p class="text-gray-600"><strong>Name:</strong> {{ $task->user->name }}</p>
         <p class="text-gray-600"><strong>Description:</strong> {{ $task->description }}</p>
         <p class="text-gray-600"><strong>Due Date:</strong> {{ $task->due_date }}</p>
+        <p class="text-gray-600"><strong>Created At:</strong> {{ $task->created_at->format('d M Y, h:i A') }}</p>
+        <p class="text-gray-600"><strong>Last Updated:</strong> {{ $task->updated_at->format('d M Y, h:i A') }}</p>
         <p class="text-gray-600"><strong>Status:</strong>
             <span class="px-2 py-1 text-white text-sm rounded-lg
                 @if($task->status == 'pending') bg-yellow-500

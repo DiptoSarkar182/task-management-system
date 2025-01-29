@@ -23,8 +23,27 @@
             <div class="bg-white shadow-lg rounded-lg p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">Your Tasks</h3>
-                    <a href="{{ route('tasks.create') }}"
-                       class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+
+                    <!-- Search & Filter Form -->
+                    <form method="GET" action="{{ route('dashboard') }}" class="flex items-center space-x-2">
+                        <!-- Search Input -->
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               placeholder="Search tasks..." class="p-2 border rounded-lg">
+
+                        <!-- Status Filter Dropdown -->
+                        <select name="status" class="p-2 border rounded-lg">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        </select>
+
+                        <button type="submit" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+                            Apply Filters
+                        </button>
+                    </form>
+
+                    <a href="{{ route('tasks.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                         + Create Task
                     </a>
                 </div>

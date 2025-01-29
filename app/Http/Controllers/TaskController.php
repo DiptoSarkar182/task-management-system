@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
@@ -54,7 +55,11 @@ class TaskController extends Controller
      */
     public function show(Task $task): View|Factory|Application
     {
-        return view('tasks.show', compact('task'));
+        if (auth()->user()->role === 'admin' || auth()->id() === $task->user_id) {
+            return view('tasks.show', compact('task'));
+        }
+
+        abort(Response::HTTP_FORBIDDEN, 'You do not have permission to view this task.');
     }
 
     /**
@@ -62,7 +67,13 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        return view('tasks.edit', compact('task'));
+        // Allow access if the user is an admin OR the task owner
+        if (auth()->user()->role === 'admin' || auth()->id() === $task->user_id) {
+            return view('tasks.edit', compact('task'));
+        }
+
+        // If the user is not allowed, abort with a 403 error
+        abort(Response::HTTP_FORBIDDEN, 'You do not have permission to edit this task.');
     }
 
     /**
@@ -72,8 +83,8 @@ class TaskController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'due_date' => 'required|date',
+            'description' => 'nullable|string|max:500',
+            'due_date' => 'required|date|after:today',
             'status' => 'required|in:pending,in_progress,completed',
             'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,webp|max:5120',
         ]);
@@ -89,10 +100,16 @@ class TaskController extends Controller
             $validated['attachment_path'] = $request->file('attachment')->store('attachments', 'public');
         }
 
+        // Preserve user_id if the current user is an admin
+        if (auth()->user()->role === 'admin') {
+            $validated['user_id'] = $task->user_id;
+        }
+
         $task->update($validated);
 
         return redirect()->route('dashboard')->with('success', 'Task updated successfully!');
     }
+
 
 
     /**
