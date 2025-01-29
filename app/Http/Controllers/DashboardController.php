@@ -29,8 +29,10 @@ class DashboardController extends Controller
             $tasksQuery->where('status', $status);
         }
 
-        $tasks = $tasksQuery->get();
+        // Paginate the results (10 tasks per page)
+        $tasks = $tasksQuery->paginate(10); // ✅ Use paginate() instead of get()
 
         return view('dashboard', compact('tasks', 'search', 'status'));
     }
+
 }
