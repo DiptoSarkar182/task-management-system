@@ -16,8 +16,8 @@ class DashboardController extends Controller
         $search = $request->input('search');
         $status = $request->input('status');
 
-        // If the user is an admin, fetch all tasks; otherwise, fetch only their own
-        $tasksQuery = $user->role === 'admin' ? Task::query() : $user->tasks();
+        // Fetch all tasks (for both admin and normal users)
+        $tasksQuery = Task::query();
 
         // Apply search filter if a search term is provided
         if ($search) {
@@ -30,9 +30,9 @@ class DashboardController extends Controller
         }
 
         // Paginate the results (10 tasks per page)
-        $tasks = $tasksQuery->paginate(10); // ✅ Use paginate() instead of get()
+        $tasks = $tasksQuery->paginate(10);
 
-        return view('dashboard', compact('tasks', 'search', 'status'));
+        return view('dashboard', compact('tasks', 'search', 'status', 'user'));
     }
 
 }

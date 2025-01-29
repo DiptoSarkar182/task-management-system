@@ -65,17 +65,20 @@
         </div>
 
         <div class="mt-6 flex space-x-3">
-            <a href="{{ route('tasks.edit', $task->id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
-                Edit Task
-            </a>
+            @if(auth()->user()->role === 'admin' || auth()->id() === $task->user_id)
+                <a href="{{ route('tasks.edit', $task->id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                    Edit Task
+                </a>
 
-            <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                    Delete Task
-                </button>
-            </form>
+                <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                        Delete Task
+                    </button>
+                </form>
+            @endif
         </div>
+
     </div>
 @endsection

@@ -56,11 +56,7 @@ class TaskController extends Controller
      */
     public function show(Task $task): View|Factory|Application
     {
-        if (auth()->user()->role === 'admin' || auth()->id() === $task->user_id) {
-            return view('tasks.show', compact('task'));
-        }
-
-        abort(Response::HTTP_FORBIDDEN, 'You do not have permission to view this task.');
+        return view('tasks.show', compact('task'));
     }
 
     /**

@@ -85,13 +85,17 @@
                                     </td>
                                     <td class="p-3 flex space-x-2">
                                         <a href="{{ route('tasks.show', $task->id) }}" class="text-blue-500 hover:text-blue-600">View</a>
-                                        <a href="{{ route('tasks.edit', $task->id) }}" class="text-yellow-500 hover:text-yellow-600">Edit</a>
-                                        <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-600" onclick="return confirm('Are you sure?')">Delete</button>
-                                        </form>
+
+                                        @if(auth()->user()->role === 'admin' || auth()->id() === $task->user_id)
+                                            <a href="{{ route('tasks.edit', $task->id) }}" class="text-yellow-500 hover:text-yellow-600">Edit</a>
+                                            <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-600" onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        @endif
                                     </td>
+
                                 </tr>
                             @endforeach
                             </tbody>
