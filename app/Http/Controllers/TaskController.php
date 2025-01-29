@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TaskCreatedMail;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -46,7 +49,14 @@ class TaskController extends Controller
             $validated['attachment_path'] = $request->file('attachment')->store('attachments', 'public');
         }
 
-        $request->user()->tasks()->create($validated);
+        $task = $request->user()->tasks()->create($validated);
+
+        $users = User::all();
+
+        // Send email to all users (queued)
+        foreach ($users as $user) {
+            Mail::to($user->email)->queue(new TaskCreatedMail($task));
+        }
 
         return redirect()->route('dashboard')->with('success', 'Task created successfully!');
     }
