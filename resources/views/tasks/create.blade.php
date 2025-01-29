@@ -5,6 +5,16 @@
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white p-6 rounded-lg shadow">
+            @if ($errors->any())
+                <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                    <strong>Oops! Something went wrong.</strong>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 

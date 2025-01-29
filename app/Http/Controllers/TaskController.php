@@ -33,11 +33,10 @@ class TaskController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-//        dd($request->all());
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'due_date' => 'required|date',
+            'description' => 'nullable|string|max:500',
+            'due_date' => 'required|date|after:today',
             'status' => 'required|in:pending,in_progress,completed',
             'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,webp|max:5120',
         ]);

@@ -32,12 +32,12 @@ class CommentController extends Controller
      */
     public function store(Request $request, Task $task): RedirectResponse
     {
-        $request->validate([
-            'content' => 'required|string|max:1000',
+        $validated = $request->validate([
+            'content' => 'required|string|max:500',
         ]);
 
         $task->comments()->create([
-            'content' => $request->content,
+            'content' => $validated['content'], // ✅ Use validated data
             'user_id' => Auth::id(),
         ]);
 
