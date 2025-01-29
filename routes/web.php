@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -39,3 +40,4 @@ Route::prefix('tasks')->middleware('auth')->group(function () {
     Route::delete('{task}/remove-attachment', [TaskController::class, 'removeAttachment'])->name('tasks.removeAttachment');
 });
 
+Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])->name('tasks.comments.store');

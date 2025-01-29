@@ -35,6 +35,26 @@
             @endif
         @endif
 
+        <div class="mt-6">
+            <h2 class="text-xl font-semibold text-gray-700">Comments</h2>
+
+            @foreach ($task->comments as $comment)
+                <div class="bg-gray-100 p-3 rounded-lg mt-3">
+                    <p class="text-gray-600">{{ $comment->content }}</p>
+                    <p class="text-sm text-gray-500">Posted by {{ $comment->user->name }} on {{ $comment->created_at->format('d M Y, h:i A') }}</p>
+                </div>
+            @endforeach
+
+            <!-- Add Comment Form -->
+            <form action="{{ route('tasks.comments.store', $task->id) }}" method="POST" class="mt-4">
+                @csrf
+                <textarea name="content" rows="3" class="w-full p-2 border rounded" required placeholder="Add a comment..."></textarea>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2">
+                    Add Comment
+                </button>
+            </form>
+        </div>
+
         <div class="mt-6 flex space-x-3">
             <a href="{{ route('tasks.edit', $task->id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
                 Edit Task
