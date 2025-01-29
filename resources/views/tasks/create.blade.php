@@ -46,7 +46,6 @@
                 </div>
 
                 <!-- Submit Button -->
-{{--                <x-primary-button class="mt-4">{{ __('Save') }}</x-primary-button>--}}
                 <button type="submit"
                         class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
                     Create Task

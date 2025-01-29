@@ -35,3 +35,7 @@ Route::post('/logout', function () {
 
 // task routes
 Route::resource('tasks', TaskController::class)->middleware('auth');
+Route::prefix('tasks')->middleware('auth')->group(function () {
+    Route::delete('{task}/remove-attachment', [TaskController::class, 'removeAttachment'])->name('tasks.removeAttachment');
+});
+

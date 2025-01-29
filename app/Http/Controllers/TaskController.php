@@ -6,6 +6,7 @@ use App\Models\Task;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,7 +31,7 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
 //        dd($request->all());
         $validated = $request->validate([
@@ -52,9 +53,9 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Task $task)
+    public function show(Task $task): View|Factory|Application
     {
-        //
+        return view('tasks.show', compact('task'));
     }
 
     /**
@@ -62,22 +63,65 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+        return view('tasks.edit', compact('task'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, Task $task): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'due_date' => 'required|date',
+            'status' => 'required|in:pending,in_progress,completed',
+            'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,webp|max:5120',
+        ]);
+
+        // Handle file upload
+        if ($request->hasFile('attachment')) {
+            // Delete the old file if it exists
+            if ($task->attachment_path) {
+                Storage::disk('public')->delete($task->attachment_path);
+            }
+
+            // Store the new file
+            $validated['attachment_path'] = $request->file('attachment')->store('attachments', 'public');
+        }
+
+        $task->update($validated);
+
+        return redirect()->route('dashboard')->with('success', 'Task updated successfully!');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy(Task $task): RedirectResponse
     {
-        //
+        // Check if the task has an attachment
+        if ($task->attachment_path) {
+            // Delete the file from storage
+            Storage::disk('public')->delete($task->attachment_path);
+        }
+
+        // Delete the task from database
+        $task->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Task deleted successfully!');
     }
+
+    public function removeAttachment(Task $task)
+    {
+        if ($task->attachment_path) {
+            Storage::disk('public')->delete($task->attachment_path);
+            $task->update(['attachment_path' => null]);
+        }
+
+        return redirect()->route('tasks.edit', $task->id)->with('success', 'Attachment removed successfully!');
+    }
+
+
 }
