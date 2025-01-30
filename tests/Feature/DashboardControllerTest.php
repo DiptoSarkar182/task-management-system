@@ -6,13 +6,14 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
 {
     use RefreshDatabase; // Ensures a clean database for testing
 
-    /** @test */
+    #[Test]
     public function it_redirects_guests_to_login_page()
     {
         $response = $this->get('/dashboard');
@@ -20,7 +21,7 @@ class DashboardControllerTest extends TestCase
         $response->assertRedirect('/login'); // Ensure guests are redirected
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_can_view_dashboard()
     {
         // Create a user
@@ -36,7 +37,7 @@ class DashboardControllerTest extends TestCase
             ->assertViewHas('user', $user);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_tasks_based_on_search_query()
     {
         $user = User::factory()->create();
@@ -60,7 +61,7 @@ class DashboardControllerTest extends TestCase
             });
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_tasks_by_status()
     {
         $user = User::factory()->create();
@@ -97,7 +98,7 @@ class DashboardControllerTest extends TestCase
     }
 
 
-    /** @test */
+    #[Test]
     public function it_paginates_tasks()
     {
         $user = User::factory()->create();

@@ -13,6 +13,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
@@ -20,7 +21,7 @@ use Tests\TestCase;
 class TaskControllerTest extends TestCase
 {
     use RefreshDatabase;
-    /** @test */
+    #[Test]
     public function it_redirects_guests_to_login_page()
     {
         $response = $this->get('/tasks/*');
@@ -28,7 +29,7 @@ class TaskControllerTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_can_view_task_create_form()
     {
         $user = User::factory()->create();
@@ -41,7 +42,7 @@ class TaskControllerTest extends TestCase
             ->assertViewIs('tasks.create');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_can_create_a_task()
     {
         // Fake storage, queue, and mail
@@ -89,7 +90,7 @@ class TaskControllerTest extends TestCase
         Mail::assertQueued(TaskCreatedMail::class);
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_users_cannot_create_a_task()
     {
         // Mock task data
@@ -110,7 +111,7 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseMissing('tasks', ['title' => 'Unauthorized Task']);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_all_fields_to_be_valid()
     {
         $user = User::factory()->create();
@@ -122,7 +123,7 @@ class TaskControllerTest extends TestCase
         $response->assertSessionHasErrors(['title', 'due_date', 'status']);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_can_view_task_edit_form()
     {
         // Create a user
@@ -140,7 +141,7 @@ class TaskControllerTest extends TestCase
             ->assertViewHas('task', $task);
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_users_cannot_access_task_edit_form()
     {
         // Create a user
@@ -156,7 +157,7 @@ class TaskControllerTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function users_cannot_edit_tasks_they_do_not_own()
     {
         // Create two users
@@ -173,7 +174,7 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function authorized_users_can_update_a_task()
     {
         Storage::fake('public'); // Fake storage
@@ -209,7 +210,7 @@ class TaskControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function users_cannot_update_tasks_they_do_not_own()
     {
         $owner = User::factory()->create();
@@ -240,7 +241,7 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseMissing('tasks', ['title' => 'Unauthorized Update']);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_update_any_task()
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -271,7 +272,7 @@ class TaskControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function authorized_users_can_delete_their_own_task()
     {
         Storage::fake('public'); // Fake storage for testing file deletion
@@ -302,7 +303,7 @@ class TaskControllerTest extends TestCase
         Storage::disk('public')->assertMissing($task->attachment_path);
     }
 
-    /** @test */
+    #[Test]
     public function an_admin_can_delete_any_task()
     {
         Storage::fake('public');
@@ -325,7 +326,7 @@ class TaskControllerTest extends TestCase
         Storage::disk('public')->assertMissing($task->attachment_path);
     }
 
-    /** @test */
+    #[Test]
     public function unauthorized_users_cannot_delete_tasks_they_do_not_own()
     {
         $owner = User::factory()->create();
@@ -345,7 +346,7 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseHas('tasks', ['id' => $task->id]);
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_users_cannot_delete_tasks()
     {
         // ✅ Ensure a user exists and assign it to the task
@@ -365,7 +366,7 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseHas('tasks', ['id' => $task->id]);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_users_can_download_an_existing_attachment()
     {
         // ✅ Use real storage instead of Storage::fake()

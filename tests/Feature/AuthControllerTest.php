@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
@@ -13,13 +14,13 @@ class AuthControllerTest extends TestCase
 
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function displays_registration_page() {
         $response = $this->get('/register');
         $response->assertStatus(200)->assertViewIs('auth.register');
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_a_new_user_and_logs_them_in()
     {
         $userData = [
@@ -42,13 +43,13 @@ class AuthControllerTest extends TestCase
         $this->assertAuthenticated();
     }
 
-    /** @test */
+    #[Test]
     public function displays_login_page() {
         $response = $this->get('/login');
         $response->assertStatus(200)->assertViewIs('auth.login');
     }
 
-    /** @test */
+    #[Test]
     public function it_logs_in_a_user_with_correct_credentials()
     {
         // Create a test user
@@ -73,7 +74,7 @@ class AuthControllerTest extends TestCase
         $response->assertSessionHas('success', 'Login successful.');
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_login_with_invalid_credentials()
     {
         // Create a user
@@ -96,7 +97,7 @@ class AuthControllerTest extends TestCase
         $response->assertSessionHasErrors(['email' => 'Invalid email or password.']);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_email_and_password_to_login()
     {
         // Attempt login with missing fields
