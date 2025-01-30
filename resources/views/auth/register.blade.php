@@ -16,10 +16,6 @@
         <p class="text-green-500 text-center">{{ session('success') }}</p>
     @endif
 
-    @if($errors->any())
-        <p class="text-red-500 text-center">{{ $errors->first() }}</p>
-    @endif
-
     <form action="{{ route('register') }}" method="POST" class="space-y-4">
         @csrf
 

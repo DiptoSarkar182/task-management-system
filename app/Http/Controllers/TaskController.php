@@ -97,6 +97,11 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task): RedirectResponse
     {
+        // ✅ Ensure only task owner or admin can update the task
+        if (auth()->user()->id !== $task->user_id && auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
@@ -126,16 +131,18 @@ class TaskController extends Controller
         return redirect()->route('dashboard')->with('success', 'Task updated successfully!');
     }
 
-
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Task $task): RedirectResponse
     {
+        // ✅ Ensure only the task owner or an admin can delete the task
+        if (auth()->user()->id !== $task->user_id && auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
         // Check if the task has an attachment
         if ($task->attachment_path) {
-            // Delete the file from storage
             Storage::disk('public')->delete($task->attachment_path);
         }
 
@@ -145,7 +152,8 @@ class TaskController extends Controller
         return redirect()->route('dashboard')->with('success', 'Task deleted successfully!');
     }
 
-    public function removeAttachment(Task $task)
+
+    public function removeAttachment(Task $task): RedirectResponse
     {
         if ($task->attachment_path) {
             Storage::disk('public')->delete($task->attachment_path);
